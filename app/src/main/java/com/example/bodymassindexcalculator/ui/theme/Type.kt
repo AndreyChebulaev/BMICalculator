@@ -41,4 +41,22 @@ object BMITypography {
         fontSize = 16.sp,
         textAlign = TextAlign.Center
     )
+    val Result = TextStyle(
+        color = BMIBlack,
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp,
+        textAlign = TextAlign.Center
+    )
+    val ActiveNav = TextStyle(
+        color = BMIBlack,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        textAlign = TextAlign.Center
+    )
+    val PassiveNav = TextStyle(
+        color = BMIGray,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        textAlign = TextAlign.Center
+    )
 }
