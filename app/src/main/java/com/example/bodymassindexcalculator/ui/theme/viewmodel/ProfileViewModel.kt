@@ -4,11 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bodymassindexcalculator.data.models.BMIResult
 import com.example.bodymassindexcalculator.data.models.User
+import com.example.bodymassindexcalculator.data.models.repository.AuthRepository
+import com.example.bodymassindexcalculator.data.models.repository.BMIRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ProfileViewModel: ViewModel() {
+@HiltViewModel
+class ProfileViewModel @Inject constructor(
+    private val authRepository: AuthRepository,
+    private val bmiRepository: BMIRepository,
+) : ViewModel() {
 
     private val _user = MutableStateFlow(User("","",""))
     val user: StateFlow<User> = _user
@@ -23,22 +31,13 @@ class ProfileViewModel: ViewModel() {
 
     private fun getUser() {
         viewModelScope.launch {
-            val user = User("ivan@mail.ru","Иван","Иванов")
-            _user.value = user
+            _user.value = authRepository.getUser()
         }
     }
 
-    private fun getResults() {
+    fun getResults() {
         viewModelScope.launch {
-            val results = listOf(
-                BMIResult("13.07.2025, 01:00", 182, 62, 18.50, "Норма. Ваш вес в здоровом диапазоне - поддерживайте его!"),
-                BMIResult("13.07.2025, 01:00", 182, 62, 18.50, "Норма. Ваш вес в здоровом диапазоне - поддерживайте его!"),
-                BMIResult("13.07.2025, 01:00", 182, 62, 18.50, "Норма. Ваш вес в здоровом диапазоне - поддерживайте его!"),
-                BMIResult("13.07.2025, 01:00", 182, 62, 18.50, "Норма. Ваш вес в здоровом диапазоне - поддерживайте его!"),
-                BMIResult("13.07.2025, 01:00", 182, 62, 18.50, "Норма. Ваш вес в здоровом диапазоне - поддерживайте его!"),
-                BMIResult("13.07.2025, 01:00", 182, 62, 18.50, "Норма. Ваш вес в здоровом диапазоне - поддерживайте его!")
-            )
-            _results.value = results
+            _results.value = bmiRepository.getResults().getOrNull() ?: emptyList()
         }
     }
 }

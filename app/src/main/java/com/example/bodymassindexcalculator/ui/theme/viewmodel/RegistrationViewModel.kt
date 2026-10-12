@@ -3,11 +3,15 @@ package com.example.bodymassindexcalculator.ui.theme.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bodymassindexcalculator.Screen
+import com.example.bodymassindexcalculator.data.models.repository.AuthRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RegistrationViewModel() : ViewModel() {
+@HiltViewModel
+class RegistrationViewModel @Inject constructor(private val authRepository: AuthRepository) : ViewModel() {
 
     private val _errorText = MutableStateFlow<String?>(null)
     val errorText: StateFlow<String?> = _errorText
@@ -22,7 +26,15 @@ class RegistrationViewModel() : ViewModel() {
                 _errorText.value = "Пароль должен содержать минимум 6 символов!"
             }
             else {
-                onChangeScreen(Screen.Login)
+                authRepository.register(email, password, firstName, lastName)
+                    .fold(
+                        onSuccess = {
+                            onChangeScreen(Screen.Login)
+                        },
+                        onFailure = {
+                            _errorText.value = it.message
+                        }
+                    )
             }
         }
     }

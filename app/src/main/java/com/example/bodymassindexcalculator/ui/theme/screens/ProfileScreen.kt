@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.text.style.TextAlign
@@ -33,6 +34,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bodymassindexcalculator.Screen
 import com.example.bodymassindexcalculator.ui.theme.components.Navigation
 import com.example.bodymassindexcalculator.ui.theme.viewmodel.ProfileViewModel
+import com.example.bodymassindexcalculator.utils.formatBMIDate
 
 
 @Composable
@@ -42,6 +44,9 @@ fun ProfileScreen(changeScreen: (Screen) -> Unit) {
     val user by viewModel.user.collectAsState()
     val results by viewModel.results.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.getResults()
+    }
     Scaffold(
         bottomBar = { Navigation(Screen.Profile, changeScreen) }
     ) { innerPadding ->
@@ -85,7 +90,7 @@ fun ProfileScreen(changeScreen: (Screen) -> Unit) {
                         style = BMITypography.Complementary
                     )
                     Text(
-                        text = it.createdAt,
+                        text = it.createdAt.formatBMIDate(),
                         style = BMITypography.Result
                     )
                     Row(

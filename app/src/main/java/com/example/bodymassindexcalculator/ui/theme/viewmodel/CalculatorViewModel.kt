@@ -3,11 +3,17 @@ package com.example.bodymassindexcalculator.ui.theme
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bodymassindexcalculator.data.models.BMIResult
+import com.example.bodymassindexcalculator.data.models.repository.BMIRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CalculatorViewModel : ViewModel() {
+@HiltViewModel
+class CalculatorViewModel @Inject constructor(
+    private val bmiRepository: BMIRepository,
+) : ViewModel() {
 
     private val _result = MutableStateFlow<BMIResult?>(null)
     val result: StateFlow<BMIResult?> = _result
@@ -40,13 +46,15 @@ class CalculatorViewModel : ViewModel() {
                     bmi >= 35.0 && bmi < 40.0 -> "Ожирение резкое. Необходимо снижение веса с медицинской поддержкой."
                     else -> "Очень резкое ожирение. Требуется срочная коррекция веса под наблюдением врача."
                 }
-                _result.value = BMIResult(
-                    createdAt = "13.07.2025, 01:00",
-                    height = height,
-                    weight = weight,
-                    bmi = bmi,
-                    recommendation = recommendation
-                )
+                bmiRepository.saveResult(height, weight, bmi, recommendation)
+                    .fold(
+                        onSuccess = {
+                            _result.value = it
+                        },
+                        onFailure = {
+                            _errorText.value = it.message
+                        }
+                    )
             }
         }
     }
